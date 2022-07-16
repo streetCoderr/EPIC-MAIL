@@ -1,12 +1,15 @@
 require("dotenv").config()
 const express = require("express")
+const app = express()
 
 const connectDB = require("./db/connect")
 
-const app = express()
+const { authRouter } = require("./route")
 
 const PORT = process.env.PORT || 3000
 
+
+app.use('/api/v1/auth', authRouter)
 
 const start = async () => {
   try {
