@@ -5,13 +5,19 @@ const app = express()
 
 const connectDB = require("./db/connect")
 
+// route
 const { authRouter } = require("./route")
+
+// middleware
+const errorHandler = require("./middleware/errorHandler")
 
 const PORT = process.env.PORT || 3000
 
+app.use(express.json())
 
 app.use('/api/v1/auth', authRouter)
 
+app.use(errorHandler)
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI)

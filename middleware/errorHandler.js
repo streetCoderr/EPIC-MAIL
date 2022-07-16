@@ -12,9 +12,9 @@ const errorHandler = (err, req, res, next) => {
     errorToHandle.statusCode = StatusCodes.BAD_REQUEST
   }
   if (err.code && err.code === 11000) {
-    errorToHandle.message = `Duplicate value entered for ${Object.keys(
+    errorToHandle.message = `The values you entered for ${Object.keys(
       err.keyValue
-    )} field, please choose another value`
+    )} have been taken already, please choose another value`
     errorToHandle.statusCode = StatusCodes.BAD_REQUEST
   }
   if (err.name === 'CastError') {
@@ -24,3 +24,5 @@ const errorHandler = (err, req, res, next) => {
 
   return res.status(errorToHandle.statusCode).json({ msg: errorToHandle.message })
 }
+
+module.exports = errorHandler
