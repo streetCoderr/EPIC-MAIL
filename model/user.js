@@ -58,4 +58,6 @@ const UserSchema = new mongoose.Schema({
   verificationDate: Date,
 })
 
+UserSchema.index({userName: 1, email:1}, {unique: true})
+
 module.exports = mongoose.model('User', UserSchema)
