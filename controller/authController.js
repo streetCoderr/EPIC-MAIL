@@ -93,7 +93,20 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.send("logout");
+  res.cookie('accessToken', 'nothing', {
+    maxAge: 0,
+    signed: true,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  })
+
+  res.cookie('refreshToken', 'nothing', {
+    maxAge: 0,
+    signed: true,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  })
+  res.status(StatusCodes.OK).json({ msg: "Logged out successfully" });
 };
 
 const forgetPassword = async (req, res) => {

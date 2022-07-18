@@ -18,7 +18,7 @@ const addCookiesToResponse = ({res, user, refreshToken}) => {
     secure: process.env.NODE_ENV === 'production'
   })
 
-  res.cookie('refreshTokem', refreshTokenJWT, {
+  res.cookie('refreshToken', refreshTokenJWT, {
     httpOnly: true,
     maxAge: thirtyDays,
     signed: true,
