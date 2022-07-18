@@ -8,12 +8,16 @@ const connectDB = require("./db/connect")
 // route
 const { authRouter } = require("./route")
 
-// middleware
+//middleware
+const cookieParser = require('cookie-parser')
+
+// custom middleware
 const errorHandler = require("./middleware/errorHandler")
 
 const PORT = process.env.PORT || 3000
 
 app.use(express.json())
+app.use(cookieParser(process.env.JWT_SECRET_KEY))
 
 app.use('/api/v1/auth', authRouter)
 

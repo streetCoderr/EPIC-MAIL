@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs")
-const { BadRequestError } = require("../error");
 const {
   default: { isAlpha, isStrongPassword, isEmail, isAlphanumeric },
 } = require("validator");
@@ -51,6 +50,11 @@ const UserSchema = new mongoose.Schema({
       message: (props) => `${props.value} is not a valid email address`,
     },
   },
+  role: {
+    type: String,
+    required: true,
+    default: 'user'
+  },
   password: {
     type: String,
     required: [true, "please provide a password"],
@@ -69,13 +73,14 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  // if (!isStrongPassword(this.password))
-  //   throw new BadRequestError(
-  //     "You must provide a minimum of 8 characters with at least one uppercase letter, one lowercase letter, one number and one symbol"
-  //   );
   const salt = await bcrypt.genSalt()
   this.password = await bcrypt.hash(this.password, salt)
 });
+
+UserSchema.methods.comparePassword = function(password) {
+  const isCorrect =  bcrypt.compare(password, this.password)
+  return isCorrect
+}
 
 UserSchema.index({ userName: 1, email: 1 }, { unique: true });
 
