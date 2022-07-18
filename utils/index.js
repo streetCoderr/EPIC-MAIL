@@ -1,4 +1,5 @@
 const sendVerificationMail = require("./sendVerificationMail")
+const sendResetPasswordMail = require('./sendResetPasswordMail')
 const generateTokenUser = require('./generateTokenUser')
 const {
   generateToken,
@@ -10,5 +11,6 @@ module.exports = {
   generateTokenUser,
   generateToken,
   generateUser,
-  addCookiesToResponse
+  addCookiesToResponse,
+  sendResetPasswordMail
 }
