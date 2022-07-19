@@ -1,0 +1,646 @@
+openapi: 3.0.0
+
+info:
+
+  title: EPIC-MAIL
+
+  description: An API for a web application that helps people exchange messages and information over the internet
+
+  contact: {}
+
+  version: '1.0'
+
+servers:
+
+- url: https://epic-mailing.herokuapp.com/api/v1
+
+  variables: {}
+
+paths:
+
+  /auth/register:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: Register User
+
+      description: Registers a user by getting the relevant fields from the request's body. A link is afterwards, forwarded to the user's email address for verification
+
+      operationId: RegisterUser
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/RegisterUserRequest'
+
+            example:
+
+              firstName: ha
+
+              lastName: Masi
+
+              userName: ham
+
+              email: ha@gmail.com
+
+              password: 123456@Me
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+        '400':
+
+          description: Bad Request
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '401':
+
+          description: Authentication failed
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '403':
+
+          description: Forbidden to access route
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/login:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: Login User
+
+      description: Logs in user using his/her email and password
+
+      operationId: LoginUser
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/LoginUserRequest'
+
+            example:
+
+              email: ha@gmail.com
+
+              password: Me@123456
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+        '400':
+
+          description: Bad Request
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '401':
+
+          description: Authentication failed
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '403':
+
+          description: Forbidden to access route
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/verify-email:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: Verify User's Email
+
+      description: The frontend provides the token and email(which itself gets from the link to verify sent to the user) to the body. This is then used to verify the user.
+
+      operationId: VerifyUser'sEmail
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/VerifyUsersEmailRequest'
+
+            example:
+
+              token: 7967de53e228d03b5aa81eb78db9f0348aca73c9cf13e4a7cc597115b3c7a99823e3b98f60c2a75ee75b720e06b069c5e61b
+
+              email: ha@gmail.com
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+        '400':
+
+          description: Bad Request
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '401':
+
+          description: Authentication failed
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '403':
+
+          description: Forbidden to access route
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/logout:
+
+    get:
+
+      tags:
+
+      - Auth
+
+      summary: Logout User
+
+      description: Removes cookies so that user's identity is forgotten by the web app until logged in again
+
+      operationId: LogoutUser
+
+      parameters: []
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+        '400':
+
+          description: Bad Request
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '401':
+
+          description: Authentication failed
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '403':
+
+          description: Forbidden to access route
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/forget-password:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: Forget Password
+
+      description: Forwards a link containing a token and email address as queries to the provided email address. The user can then follow this link to reset password
+
+      operationId: ForgetPassword
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/ForgetPasswordRequest'
+
+            example:
+
+              email: ha@gmail.com
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+        '400':
+
+          description: Bad Request
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '401':
+
+          description: Authentication failed
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '403':
+
+          description: Forbidden to access route
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/reset-password:
+
+    post:
+
+      tags:
+
+      - Auth
+
+      summary: Reset Password
+
+      description: A token, email address and password is provided with which, after validity check, the user's password updated
+
+      operationId: ResetPassword
+
+      parameters: []
+
+      requestBody:
+
+        description: ''
+
+        content:
+
+          application/json:
+
+            schema:
+
+              $ref: '#/components/schemas/ResetPasswordRequest'
+
+            example:
+
+              token: 990d3f03e3519932a323b47775c04d7ed10149428205a3d8f9b387c38196df602050c92d6d619e947ce642a361716931ba96
+
+              email: ha@gmail.com
+
+              password: Me@123456
+
+        required: true
+
+      responses:
+
+        '200':
+
+          description: ''
+
+          headers: {}
+
+        '400':
+
+          description: Bad Request
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '401':
+
+          description: Authentication failed
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+        '403':
+
+          description: Forbidden to access route
+
+          content:
+
+            application/json:
+
+              schema: {}
+
+      deprecated: false
+
+      security: []
+
+components:
+
+  schemas:
+
+    RegisterUserRequest:
+
+      title: RegisterUserRequest
+
+      required:
+
+      - firstName
+
+      - lastName
+
+      - userName
+
+      - email
+
+      - password
+
+      type: object
+
+      properties:
+
+        firstName:
+
+          type: string
+
+        lastName:
+
+          type: string
+
+        userName:
+
+          type: string
+
+        email:
+
+          type: string
+
+        password:
+
+          type: string
+
+      example:
+
+        firstName: ha
+
+        lastName: Masi
+
+        userName: ham
+
+        email: ha@gmail.com
+
+        password: 123456@Me
+
+    LoginUserRequest:
+
+      title: LoginUserRequest
+
+      required:
+
+      - email
+
+      - password
+
+      type: object
+
+      properties:
+
+        email:
+
+          type: string
+
+        password:
+
+          type: string
+
+      example:
+
+        email: ha@gmail.com
+
+        password: Me@123456
+
+    VerifyUsersEmailRequest:
+
+      title: VerifyUsersEmailRequest
+
+      required:
+
+      - token
+
+      - email
+
+      type: object
+
+      properties:
+
+        token:
+
+          type: string
+
+        email:
+
+          type: string
+
+      example:
+
+        token: 7967de53e228d03b5aa81eb78db9f0348aca73c9cf13e4a7cc597115b3c7a99823e3b98f60c2a75ee75b720e06b069c5e61b
+
+        email: ha@gmail.com
+
+    ForgetPasswordRequest:
+
+      title: ForgetPasswordRequest
+
+      required:
+
+      - email
+
+      type: object
+
+      properties:
+
+        email:
+
+          type: string
+
+      example:
+
+        email: ha@gmail.com
+
+    ResetPasswordRequest:
+
+      title: ResetPasswordRequest
+
+      required:
+
+      - token
+
+      - email
+
+      - password
+
+      type: object
+
+      properties:
+
+        token:
+
+          type: string
+
+        email:
+
+          type: string
+
+        password:
+
+          type: string
+
+      example:
+
+        token: 990d3f03e3519932a323b47775c04d7ed10149428205a3d8f9b387c38196df602050c92d6d619e947ce642a361716931ba96
+
+        email: ha@gmail.com
+
+        password: Me@123456
+
+tags:
+
+- name: Auth
+
