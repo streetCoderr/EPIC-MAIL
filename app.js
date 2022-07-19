@@ -24,7 +24,7 @@ const errorHandler = require("./middleware/errorHandler")
 // documentation
 const swaggerUI = require('swagger-ui-express');
 const yaml = require('yamljs')
-const docs = yaml.load('./docs.yaml')
+const docs = yaml.load('./swagger.yaml')
 
 const PORT = process.env.PORT || 3000
 
@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
   res.send("<h1>EPIC-MAIL API</h1><p>To learn more, read the <a href='/api-docs'>documentation</a></p>")
 })
 
-app.get('/api-docs', swaggerUI.serve, swaggerUI.setup(docs))
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(docs))
 
 app.use('/api/v1/auth', authRouter)
 
