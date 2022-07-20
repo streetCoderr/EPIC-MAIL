@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 const {
   default: { isAlpha, isStrongPassword, isEmail, isAlphanumeric },
 } = require("validator");
@@ -53,15 +53,16 @@ const UserSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
-    default: 'user'
+    default: "user",
   },
   password: {
     type: String,
     required: [true, "please provide a password"],
     validate: {
       validator: isStrongPassword,
-      message: "You must provide a minimum of 8 characters with at least one uppercase letter, one lowercase letter, one number and one symbol"
-    }
+      message:
+        "You must provide a minimum of 8 characters with at least one uppercase letter, one lowercase letter, one number and one symbol",
+    },
   },
   verificationToken: String,
   isVerified: {
@@ -70,19 +71,19 @@ const UserSchema = new mongoose.Schema({
   },
   verificationDate: Date,
   passwordToken: String,
-  passwordTokenExpirationDate: Date
+  passwordTokenExpirationDate: Date,
 });
 
 UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  const salt = await bcrypt.genSalt()
-  this.password = await bcrypt.hash(this.password, salt)
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-UserSchema.methods.comparePassword = function(password) {
-  const isCorrect =  bcrypt.compare(password, this.password)
-  return isCorrect
-}
+UserSchema.methods.comparePassword = function (password) {
+  const isCorrect = bcrypt.compare(password, this.password);
+  return isCorrect;
+};
 
 UserSchema.index({ userName: 1, email: 1 }, { unique: true });
 

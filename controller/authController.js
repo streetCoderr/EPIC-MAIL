@@ -93,19 +93,19 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.cookie('accessToken', 'nothing', {
+  res.cookie("accessToken", "nothing", {
     maxAge: 0,
     signed: true,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
-  })
+    secure: process.env.NODE_ENV === "production",
+  });
 
-  res.cookie('refreshToken', 'nothing', {
+  res.cookie("refreshToken", "nothing", {
     maxAge: 0,
     signed: true,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
-  })
+    secure: process.env.NODE_ENV === "production",
+  });
   res.status(StatusCodes.OK).json({ msg: "Logged out successfully" });
 };
 
@@ -127,34 +127,39 @@ const forgetPassword = async (req, res) => {
       passwordToken,
       name: user.firstName,
     });
-    const oneHour = 1000 * 60 * 60
+    const oneHour = 1000 * 60 * 60;
     user.passwordToken = passwordToken;
     user.passwordTokenExpirationDate = new Date(Date.now() + oneHour);
     await user.save();
   }
-  res
-    .status(StatusCodes.OK)
-    .json({
-      msg: `A link has been sent to ${email}. Follow it to reset your password.`,
-    });
+  res.status(StatusCodes.OK).json({
+    msg: `A link has been sent to ${email}. Follow it to reset your password.`,
+  });
 };
 
 const resetPassword = async (req, res) => {
-  const { password , token, email } = req.body
+  const { password, token, email } = req.body;
   if (!token || !email || !password) {
-    throw new BadRequestError("Please provide the following values: token, email and password")
+    throw new BadRequestError(
+      "Please provide the following values: token, email and password"
+    );
   }
-  const user = await User.findOne({email: email.trim().toLowerCase()})
+  const user = await User.findOne({ email: email.trim().toLowerCase() });
   if (user) {
     const currentDate = new Date();
-    if (user.passwordToken === token && user.passwordTokenExpirationDate > currentDate) {
-      user.password = password
-      user.passwordToken = null
-      user.passwordTokenExpirationDate = null
-      await user.save()
+    if (
+      user.passwordToken === token &&
+      user.passwordTokenExpirationDate > currentDate
+    ) {
+      user.password = password;
+      user.passwordToken = null;
+      user.passwordTokenExpirationDate = null;
+      await user.save();
     }
   }
-  res.status(StatusCodes.OK).json({msg: "Your password has been reset successfully"})
+  res
+    .status(StatusCodes.OK)
+    .json({ msg: "Your password has been reset successfully" });
 };
 
 module.exports = {
