@@ -3,7 +3,6 @@ const Token = require("../model/token");
 
 const {
   BadRequestError,
-  NotFoundError,
   UnauthenticatedError,
 } = require("../error");
 const { StatusCodes } = require("http-status-codes");
@@ -28,7 +27,7 @@ const register = async (req, res) => {
   await user.save();
   // temporary origin
   // The origin should be changed to the clientside domain
-  const origin = "http://localhost:3000";
+  const origin = `${req.protocol}://${req.get('host')}`;
   sendVerificationMail({
     email,
     origin,
@@ -87,20 +86,20 @@ const login = async (req, res) => {
   }
 
   refreshToken = crypto.randomBytes(40).toString("hex");
-  await Token.create({ refreshToken, isValid: true, user: user._id });
+  await Token.create({ refreshToken, user: user._id });
   addCookiesToResponse({ res, user: tokenizedUser, refreshToken });
   res.status(StatusCodes.OK).json({ user: tokenizedUser });
 };
 
 const logout = async (req, res) => {
-  res.cookie("accessToken", "nothing", {
+  res.cookie("accessToken", "", {
     maxAge: 0,
     signed: true,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
 
-  res.cookie("refreshToken", "nothing", {
+  res.cookie("refreshToken", "", {
     maxAge: 0,
     signed: true,
     httpOnly: true,
@@ -119,7 +118,7 @@ const forgetPassword = async (req, res) => {
   if (user) {
     // temporary origin
     // The origin should be changed to the clientside domain
-    const origin = `http://localhost:3000`;
+    const origin = `${req.protocol}://${req.get('host')}`;
     const passwordToken = crypto.randomBytes(50).toString("hex");
     sendResetPasswordMail({
       email,

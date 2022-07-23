@@ -31,7 +31,7 @@ const PORT = process.env.PORT || 3000;
 app.set("trust proxy", 1);
 app.use(
   rateLimiter({
-    windows: 15 * 60 * 100,
+    windows: 15 * 60 * 1000,
     max: 60,
   })
 );
@@ -43,11 +43,7 @@ app.use(mongoSanitize());
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET_KEY));
 
-app.get("/", (req, res) => {
-  res.send(
-    "<h1>EPIC-MAIL API</h1><p>To learn more, read the <a href='/api-docs'>documentation</a></p>"
-  );
-});
+app.use(express.static('public'));
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 
