@@ -1,6 +1,6 @@
 const User = require("../model/user");
 const Token = require("../model/token");
-
+const asyncErrorCatcher =  require('../middleware/asyncErrorCatcher')
 const {
   BadRequestError,
   UnauthenticatedError,
@@ -14,7 +14,7 @@ const {
   sendResetPasswordMail,
 } = require("../utils");
 
-const register = async (req, res) => {
+const register = asyncErrorCatcher(async (req, res) => {
   const { firstName, lastName, userName, email, password } = req.body;
   const user = await User.create({
     firstName,
@@ -37,9 +37,9 @@ const register = async (req, res) => {
   res.status(StatusCodes.CREATED).json({
     msg: "Your account was created successfully. Check your email to verify your account",
   });
-};
+})
 
-const verifyEmail = async (req, res) => {
+const verifyEmail = asyncErrorCatcher(async (req, res) => {
   const { token, email } = req.body;
   const user = await User.findOne({ email, verificationToken: token });
   if (!user) {
@@ -56,9 +56,9 @@ const verifyEmail = async (req, res) => {
 
   await user.save();
   res.status(StatusCodes.OK).json({ msg: "Verification successful" });
-};
+})
 
-const login = async (req, res) => {
+const login = asyncErrorCatcher(async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     throw new BadRequestError("please provide email and password");
@@ -89,9 +89,9 @@ const login = async (req, res) => {
   await Token.create({ refreshToken, user: user._id });
   addCookiesToResponse({ res, user: tokenizedUser, refreshToken });
   res.status(StatusCodes.OK).json({ user: tokenizedUser });
-};
+})
 
-const logout = async (req, res) => {
+const logout = asyncErrorCatcher(async (req, res) => {
   res.cookie("accessToken", "", {
     maxAge: 0,
     signed: true,
@@ -106,9 +106,9 @@ const logout = async (req, res) => {
     secure: process.env.NODE_ENV === "production",
   });
   res.status(StatusCodes.OK).json({ msg: "Logged out successfully" });
-};
+})
 
-const forgetPassword = async (req, res) => {
+const forgetPassword = asyncErrorCatcher(async (req, res) => {
   let { email } = req.body;
   if (!email) {
     throw new BadRequestError("Please provide your email address");
@@ -134,9 +134,9 @@ const forgetPassword = async (req, res) => {
   res.status(StatusCodes.OK).json({
     msg: `A link has been sent to ${email}. Follow it to reset your password.`,
   });
-};
+})
 
-const resetPassword = async (req, res) => {
+const resetPassword = asyncErrorCatcher(async (req, res) => {
   const { password, token, email } = req.body;
   if (!token || !email || !password) {
     throw new BadRequestError(
@@ -159,7 +159,7 @@ const resetPassword = async (req, res) => {
   res
     .status(StatusCodes.OK)
     .json({ msg: "Your password has been reset successfully" });
-};
+})
 
 module.exports = {
   register,

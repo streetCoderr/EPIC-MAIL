@@ -12,9 +12,9 @@ const errorHandler = (err, req, res, next) => {
     errorToHandle.statusCode = StatusCodes.BAD_REQUEST;
   }
   if (err.code && err.code === 11000) {
-    errorToHandle.message = `The values you entered for ${Object.keys(
+    errorToHandle.message = `The values you entered for the properties: [${Object.keys(
       err.keyValue
-    )} have been taken already, please choose another value`;
+    )}], have been taken already, please choose another value`;
     errorToHandle.statusCode = StatusCodes.BAD_REQUEST;
   }
   if (err.name === "CastError") {
