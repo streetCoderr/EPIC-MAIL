@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const generateToken = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET_KEY);
 
-const generateUser = (token) => jwt.verify(token, process.env.JWT_SECRET_KEY);
+const generatePayload = (token) => jwt.verify(token, process.env.JWT_SECRET_KEY);
 
 const addCookiesToResponse = ({ res, user, refreshToken }) => {
   const accessTokenJWT = generateToken(user);
@@ -29,6 +29,6 @@ const addCookiesToResponse = ({ res, user, refreshToken }) => {
 
 module.exports = {
   generateToken,
-  generateUser,
+  generatePayload,
   addCookiesToResponse,
 };

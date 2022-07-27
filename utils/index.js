@@ -3,14 +3,14 @@ const sendResetPasswordMail = require("./sendResetPasswordMail");
 const generateTokenUser = require("./generateTokenUser");
 const {
   generateToken,
-  generateUser,
+  generatePayload,
   addCookiesToResponse,
 } = require("./tokenUtils");
 module.exports = {
   sendVerificationMail,
   generateTokenUser,
   generateToken,
-  generateUser,
+  generatePayload,
   addCookiesToResponse,
   sendResetPasswordMail,
 };
