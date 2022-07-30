@@ -18,7 +18,7 @@ const cors = require("cors");
 const mongoSanitize = require("express-mongo-sanitize");
 
 // custom middleware
-const errorHandler = require("./middleware/errorHandler");
+const {errorHandler, authenticateUser} = require("./middleware");
 
 // documentation
 const swaggerUI = require("swagger-ui-express");
@@ -47,7 +47,7 @@ app.use(express.static('public'));
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/messages", messageRouter);
+app.use("/api/v1/messages", authenticateUser, messageRouter);
 
 app.use(errorHandler);
 const start = async () => {

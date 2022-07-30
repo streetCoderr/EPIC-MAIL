@@ -3,8 +3,9 @@ const crypto = require("crypto")
 const Token = require("../model/token")
 const {UnauthenticatedError} = require("../error")
 const {generatePayload, addCookiesToResponse} = require("../utils")
+const asyncErrorCatcher = require("./asyncErrorCatcher")
 
-const authenticateUser = async (req, res, next) => {
+const authenticateUser = asyncErrorCatcher(async (req, res, next) => {
   try {
     const { accessToken, refreshToken } = req.signedCookies
     if (accessToken) {
@@ -18,7 +19,7 @@ const authenticateUser = async (req, res, next) => {
       user: payload.user
     })
     if (!tokenExists || !tokenExists.isValid)
-      throw new UnauthenticatedError("Authentication failed.")
+      throw new UnauthenticatedError("Authentication failed")
 
     const newRefreshToken = crypto.randomBytes(40).toString("hex");
     tokenExists.refreshToken = newRefreshToken
@@ -29,6 +30,6 @@ const authenticateUser = async (req, res, next) => {
   } catch (error) {
     throw new UnauthenticatedError("Authentication failed")
   }
-}
+})
 
 module.exports = authenticateUser
