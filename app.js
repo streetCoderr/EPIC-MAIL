@@ -5,7 +5,7 @@ const app = express();
 const connectDB = require("./db/connect");
 
 // route
-const { authRouter } = require("./route");
+const { authRouter, messageRouter } = require("./route");
 
 //middleware
 const cookieParser = require("cookie-parser");
@@ -47,6 +47,7 @@ app.use(express.static('public'));
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/messages", messageRouter);
 
 app.use(errorHandler);
 const start = async () => {

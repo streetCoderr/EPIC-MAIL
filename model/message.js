@@ -29,7 +29,7 @@ const MessageSchema = new mongoose.Schema({
       message: "{VALUE} is not a valid status"
     },
     required: true,
-    default: 'draft',
+    default: 'sent',
   },
   sentDate: Date,
 }, {timestamps: true})

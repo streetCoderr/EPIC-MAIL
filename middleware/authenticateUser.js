@@ -4,7 +4,7 @@ const Token = require("../model/token")
 const {UnauthenticatedError} = require("../error")
 const {generatePayload, addCookiesToResponse} = require("../utils")
 
-const authenticateUser = (req, res, next) => {
+const authenticateUser = async (req, res, next) => {
   try {
     const { accessToken, refreshToken } = req.signedCookies
     if (accessToken) {
