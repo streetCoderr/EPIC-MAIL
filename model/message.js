@@ -1,12 +1,9 @@
 const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, "please provide title/subject of the message"],
-    default: "no-title",
-    trim: true,
-    maxlength: 50
+  conversationID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Conversation"
   },
   content: {
     type: String,
