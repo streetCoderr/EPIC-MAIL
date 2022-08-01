@@ -1,19 +1,25 @@
 const Message = require("../model/message");
 const User = require("../model/user");
+const Conversation = require("../model/conversation")
+
 const { asyncErrorCatcher } = require("../middleware");
 const {
   default: { isEmail },
 } = require("validator");
-const { BadRequestError, NotFoundError } = require("../error");
+const {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} = require("../error");
 const { StatusCodes } = require("http-status-codes");
 
 const sendMessage = asyncErrorCatcher(async (req, res) => {
-  const { title, content, recipient } = req.body;
+  const { content, recipient } = req.body;
   if (!recipient)
     throw new BadRequestError("Please provide recipient's email or username");
 
   const anEmail = isEmail(recipient) ? 1 : 0;
-  const receiver = anEmail
+  let receiver = anEmail
     ? await User.findOne({ email: recipient.toLowerCase().trim() })
     : await User.findOne({ userName: recipient.trim() });
 
@@ -22,11 +28,44 @@ const sendMessage = asyncErrorCatcher(async (req, res) => {
       `Could not find a user with ${anEmail ? "email" : "username"}: recipient`
     );
 
+  if (String(receiver._id) === req.user.userId) {
+    throw new BadRequestError("You can't send a message to yourself");
+  }
+
+  const sender = req.user.userId;
+  receiver = receiver._id;
+
+  let conversation = await Conversation.findOne({
+    $or: [
+      {
+        lastSender: sender,
+        lastReceiver: receiver,
+      },
+      {
+        lastSender: receiver,
+        lastReceiver: sender,
+      }
+    ]
+  })
+
+  if (conversation) {
+    if (String(conversation.lastSender) !== sender) {
+      conversation.lastSender = sender
+      conversation.lastReceiver = receiver
+      await conversation.save()
+    }
+  } else {
+    conversation = await Conversation.create({
+      lastSender: sender,
+      lastReceiver: receiver
+    })
+  }
+
   const message = await Message.create({
-    title,
+    conversationID: conversation._id,
     content,
-    sender: req.user.userId,
-    receiver: receiver._id,
+    sender,
+    receiver,
   });
 
   res.status(StatusCodes.OK).json({
@@ -36,7 +75,24 @@ const sendMessage = asyncErrorCatcher(async (req, res) => {
 });
 
 const getMessage = asyncErrorCatcher(async (req, res) => {
-  res.send("get message");
+  const { id } = req.params;
+  const message = await Message.findOne({ _id: id });
+
+  if (!message)
+    throw new NotFoundError(
+      `Could not find any message associated with id: ${id}`
+    );
+
+  const userId = req.user.userId;
+  if (userId != String(message.sender) && userId != String(message.receiver))
+    throw new UnauthorizedError(
+      "You do not have permission to access this message"
+    );
+  
+  if (message.status === "retracted") 
+   throw new BadRequestError("The requested message has been retracted")
+
+  res.status(StatusCodes.OK).json({ message });
 });
 
 const getInbox = asyncErrorCatcher(async (req, res) => {
