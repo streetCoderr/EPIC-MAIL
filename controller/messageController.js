@@ -139,6 +139,11 @@ const getThread = asyncErrorCatcher(async (req, res) => {
   if (!conversation)
     throw new NotFoundError(`Could not find any thread associated with id: ${conversationID}`)
 
+  const { lastSender, lastReceiver } = conversation
+  if (req.user.userId != String(lastSender) && req.user.userId != String(lastReceiver)) {
+    throw new UnauthorizedError("You do not have permission to access this route")
+  }
+
   const thread = await Message.find({conversationID, status: "sent"}).sort({updatedAt: 1});
 
   res.status(StatusCodes.OK).json({thread})
