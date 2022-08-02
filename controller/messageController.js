@@ -139,10 +139,15 @@ const retractMessage = asyncErrorCatcher(async (req, res) => {
   res.send("retract message");
 });
 
+const saveAsDraft = asyncErrorCatcher(async (req, res) => {
+  res.send("save as draft")
+})
+
 module.exports = {
   sendMessage,
   getMessage,
   getInbox,
   getThread,
   retractMessage,
+  saveAsDraft,
 };

@@ -6,12 +6,14 @@ const {
   getInbox,
   getThread,
   retractMessage,
+  saveAsDraft
 } = require("../controller/messageController")
 
 router.post('/', sendMessage)
-router.get('/getInbox', getInbox)
-router.get('/getThread', getThread)
-router.patch('/retractMessage', retractMessage)
+router.get('/inbox', getInbox)
+router.get('/inbox/:thread', getThread)
+router.patch('/retract/:id', retractMessage)
+router.post('/draft', saveAsDraft)
 router.get('/:id', getMessage)
 
 module.exports = router
