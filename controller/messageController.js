@@ -1,6 +1,7 @@
 const Message = require("../model/message");
 const User = require("../model/user");
 const Conversation = require("../model/conversation")
+const mongoose = require("mongoose")
 
 const { asyncErrorCatcher } = require("../middleware");
 const {
@@ -96,7 +97,38 @@ const getMessage = asyncErrorCatcher(async (req, res) => {
 });
 
 const getInbox = asyncErrorCatcher(async (req, res) => {
-  res.send("getInbox");
+  const inbox = await Message.aggregate(
+    [
+      {
+        $match: {
+          $or: [
+            {
+              sender: new mongoose.Types.ObjectId(req.user.userId)
+            },
+            {
+              receiver: new mongoose.Types.ObjectId(req.user.userId)
+            }
+          ]
+        }
+      },
+      {
+        $sort: {
+          updatedAt: 1
+        }
+      },
+      {
+        $group: {
+          _id: "$conversationID",
+          messages: {
+            $push: "$$ROOT"
+          }
+        }
+      }
+    ]
+  )
+  
+  res.status(StatusCodes.OK).json({inbox})
+
 });
 
 const getThread = asyncErrorCatcher(async (req, res) => {
