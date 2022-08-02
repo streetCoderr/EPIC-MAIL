@@ -76,12 +76,12 @@ const sendMessage = asyncErrorCatcher(async (req, res) => {
 });
 
 const getMessage = asyncErrorCatcher(async (req, res) => {
-  const { id } = req.params;
-  const message = await Message.findOne({ _id: id });
+  const { messageID } = req.params;
+  const message = await Message.findOne({ _id: messageID });
 
   if (!message)
     throw new NotFoundError(
-      `Could not find any message associated with id: ${id}`
+      `Could not find any message associated with id: ${messageID}`
     );
 
   const userId = req.user.userId;
@@ -132,7 +132,16 @@ const getInbox = asyncErrorCatcher(async (req, res) => {
 });
 
 const getThread = asyncErrorCatcher(async (req, res) => {
-  res.send("getThread");
+
+  const { conversationID } = req.params
+  
+  const conversation = await Conversation.findOne({_id: conversationID})
+  if (!conversation)
+    throw new NotFoundError(`Could not find any thread associated with id: ${conversationID}`)
+
+  const thread = await Message.find({conversationID, status: "sent"}).sort({updatedAt: 1});
+
+  res.status(StatusCodes.OK).json({thread})
 });
 
 const retractMessage = asyncErrorCatcher(async (req, res) => {

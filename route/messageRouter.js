@@ -11,9 +11,9 @@ const {
 
 router.post('/', sendMessage)
 router.get('/inbox', getInbox)
-router.get('/inbox/:thread', getThread)
-router.patch('/retract/:id', retractMessage)
+router.get('/inbox/:conversationID', getThread)
+router.patch('/retract/:messageID', retractMessage)
 router.post('/draft', saveAsDraft)
-router.get('/:id', getMessage)
+router.get('/:messageID', getMessage)
 
 module.exports = router
