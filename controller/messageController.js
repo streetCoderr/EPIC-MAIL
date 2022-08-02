@@ -150,7 +150,27 @@ const getThread = asyncErrorCatcher(async (req, res) => {
 });
 
 const retractMessage = asyncErrorCatcher(async (req, res) => {
-  res.send("retract message");
+  const {messageID} = req.params
+  const message = await Message.findOne({
+    _id: messageID,
+    sender: req.user.userId
+  })
+
+  if (!message)
+    throw new NotFoundError(`You do not have any message associated with id: ${messageID}`)
+
+  const {status} = message
+  
+  if (status == "retracted")
+    throw new BadRequestError("This message has already been retracted")
+
+  if (status == "draft")
+    throw new BadRequestError("You can only retract a sent message")
+  
+  message.status = "retracted"
+  await message.save()
+
+  res.status(StatusCodes.OK).json({msg: "Successfully retracted"})
 });
 
 const saveAsDraft = asyncErrorCatcher(async (req, res) => {
