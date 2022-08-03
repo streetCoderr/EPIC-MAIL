@@ -97,10 +97,12 @@ const getInbox = asyncErrorCatcher(async (req, res) => {
         $match: {
           $or: [
             {
-              sender: new mongoose.Types.ObjectId(req.user.userId)
+              sender: new mongoose.Types.ObjectId(req.user.userId),
+              status: "sent",
             },
             {
-              receiver: new mongoose.Types.ObjectId(req.user.userId)
+              receiver: new mongoose.Types.ObjectId(req.user.userId),
+              status: "sent",
             }
           ]
         }
