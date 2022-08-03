@@ -17,7 +17,6 @@ const MessageSchema = new mongoose.Schema({
   receiver: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, "please provide receiver's id"]
   },
   status: {
     type: String,

@@ -1,15 +1,15 @@
 const mongoose = require("mongoose")
 
 const ConversationSchema = new mongoose.Schema({
-  lastSender: {
+  initiator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "please provide last sender's ID"]
+    required: [true, "please provide initiator's ID"]
   },
-  lastReceiver: {
+  partaker: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "please provide last receiver's ID"]
+    required: [true, "please provide partaker's ID"]
   }
 }, {timestamps: true})
 

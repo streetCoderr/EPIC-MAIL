@@ -5,7 +5,7 @@ const mongoose = require("mongoose")
 
 const { asyncErrorCatcher } = require("../middleware");
 const {
-  default: { isEmail },
+  default: { isEmail, isMongoId },
 } = require("validator");
 const {
   BadRequestError,
@@ -39,28 +39,22 @@ const sendMessage = asyncErrorCatcher(async (req, res) => {
   let conversation = await Conversation.findOne({
     $or: [
       {
-        lastSender: sender,
-        lastReceiver: receiver,
+        initiator: sender,
+        partaker: receiver,
       },
       {
-        lastSender: receiver,
-        lastReceiver: sender,
+        initiator: receiver,
+        partaker: sender,
       }
     ]
   })
 
-  if (conversation) {
-    if (String(conversation.lastSender) !== sender) {
-      conversation.lastSender = sender
-      conversation.lastReceiver = receiver
-      await conversation.save()
-    }
-  } else {
+  if (!conversation) {
     conversation = await Conversation.create({
-      lastSender: sender,
-      lastReceiver: receiver
+      initiator: sender,
+      partaker: receiver
     })
-  }
+  } 
 
   const message = await Message.create({
     conversationID: conversation._id,
@@ -134,17 +128,25 @@ const getInbox = asyncErrorCatcher(async (req, res) => {
 const getThread = asyncErrorCatcher(async (req, res) => {
 
   const { conversationID } = req.params
-  
-  const conversation = await Conversation.findOne({_id: conversationID})
-  if (!conversation)
-    throw new NotFoundError(`Could not find any thread associated with id: ${conversationID}`)
 
-  const { lastSender, lastReceiver } = conversation
-  if (req.user.userId != String(lastSender) && req.user.userId != String(lastReceiver)) {
-    throw new UnauthorizedError("You do not have permission to access this route")
-  }
+  if (!(isMongoId(conversationID)))
+    throw new BadRequestError(`${conversationID} is not a valid conversation ID`)
 
-  const thread = await Message.find({conversationID, status: "sent"}).sort({updatedAt: 1});
+  const thread = await Message.find({
+    $or:
+      [
+        {
+          conversationID,
+          status: "sent",
+          sender: req.user.userId
+        },
+        {
+          conversationID,
+          status: "sent",
+          receiver: req.user.userId
+        }
+      ]
+    }).sort({updatedAt: 1});
 
   res.status(StatusCodes.OK).json({thread})
 });
