@@ -176,7 +176,12 @@ const retractMessage = asyncErrorCatcher(async (req, res) => {
 });
 
 const saveAsDraft = asyncErrorCatcher(async (req, res) => {
-  res.send("save as draft")
+  const { content } = req.body
+  const message = await Message.create({
+    content, sender: req.user.userId, status: "draft"
+  })
+
+  res.status(StatusCodes.OK).json({message})
 })
 
 module.exports = {
