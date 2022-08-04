@@ -1,12 +1,15 @@
 const User = require("../model/user");
 const Token = require("../model/token");
+
 const asyncErrorCatcher =  require('../middleware/asyncErrorCatcher')
 const {
   BadRequestError,
   UnauthenticatedError,
 } = require("../error");
+
 const { StatusCodes } = require("http-status-codes");
 const crypto = require("crypto");
+
 const {
   sendVerificationMail,
   generateTokenUser,
@@ -16,6 +19,7 @@ const {
 
 const register = asyncErrorCatcher(async (req, res) => {
   const { firstName, lastName, userName, email, password } = req.body;
+
   const user = await User.create({
     firstName,
     lastName,
@@ -25,8 +29,7 @@ const register = asyncErrorCatcher(async (req, res) => {
   });
   user.verificationToken = crypto.randomBytes(50).toString("hex");
   await user.save();
-  // temporary origin
-  // The origin should be changed to the clientside domain
+  
   const origin = `${req.protocol}://${req.get('host')}`;
   sendVerificationMail({
     email,
@@ -34,6 +37,7 @@ const register = asyncErrorCatcher(async (req, res) => {
     name: firstName,
     verificationToken: user.verificationToken,
   });
+
   res.status(StatusCodes.CREATED).json({
     msg: "Your account was created successfully. Check your email to verify your account",
   });
@@ -42,6 +46,7 @@ const register = asyncErrorCatcher(async (req, res) => {
 const verifyEmail = asyncErrorCatcher(async (req, res) => {
   const { token, email } = req.body;
   const user = await User.findOne({ email, verificationToken: token });
+
   if (!user) {
     throw new UnauthenticatedError("Verication failed!");
   }
@@ -50,6 +55,7 @@ const verifyEmail = asyncErrorCatcher(async (req, res) => {
       "This account have previously been verified. Proceed to login"
     );
   }
+
   user.verificationToken = "";
   user.isVerified = true;
   user.verificationDate = new Date();
@@ -63,6 +69,7 @@ const login = asyncErrorCatcher(async (req, res) => {
   if (!email || !password) {
     throw new BadRequestError("please provide email and password");
   }
+
   const user = await User.findOne({ email: email.toLowerCase() });
   if (!user || !(await user.comparePassword(password))) {
     throw new UnauthenticatedError(
@@ -76,6 +83,7 @@ const login = asyncErrorCatcher(async (req, res) => {
   let refreshToken;
   const tokenizedUser = generateTokenUser(user);
   const existingToken = await Token.findOne({ user: user._id });
+
   if (existingToken) {
     if (!existingToken.isValid) {
       throw new UnauthenticatedError("Access denied. Please contact support");
@@ -114,18 +122,20 @@ const forgetPassword = asyncErrorCatcher(async (req, res) => {
     throw new BadRequestError("Please provide your email address");
   }
   email = email.toLowerCase();
+
   const user = await User.findOne({ email });
   if (user) {
-    // temporary origin
-    // The origin should be changed to the clientside domain
+    
     const origin = `${req.protocol}://${req.get('host')}`;
     const passwordToken = crypto.randomBytes(50).toString("hex");
+
     sendResetPasswordMail({
       email,
       origin,
       passwordToken,
       name: user.firstName,
     });
+
     const oneHour = 1000 * 60 * 60;
     user.passwordToken = passwordToken;
     user.passwordTokenExpirationDate = new Date(Date.now() + oneHour);
@@ -143,6 +153,7 @@ const resetPassword = asyncErrorCatcher(async (req, res) => {
       "Please provide the following values: token, email and password"
     );
   }
+
   const user = await User.findOne({ email: email.trim().toLowerCase() });
   if (user) {
     const currentDate = new Date();
@@ -156,6 +167,7 @@ const resetPassword = asyncErrorCatcher(async (req, res) => {
       await user.save();
     }
   }
+  
   res
     .status(StatusCodes.OK)
     .json({ msg: "Your password has been reset successfully" });
