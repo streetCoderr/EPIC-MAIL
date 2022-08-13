@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema({
-  conversationID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Conversation"
+  subject: {
+    type: String,
+    default: "no-subject",
+    required: [true, "please provide message's subject"],
   },
   content: {
     type: String,
@@ -27,6 +28,11 @@ const MessageSchema = new mongoose.Schema({
     required: true,
     default: 'sent',
   },
-}, {timestamps: true})
+}, 
+{
+  timestamps: {
+    updatedAt: "sentAt"
+  }
+})
 
 module.exports = mongoose.model('Message', MessageSchema)

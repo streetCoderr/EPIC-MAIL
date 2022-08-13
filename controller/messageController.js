@@ -1,12 +1,9 @@
 const Message = require("../model/message");
 const User = require("../model/user");
-const Conversation = require("../model/conversation")
-const mongoose = require("mongoose")
+// const Conversation = require("../model/conversation")
 
 const { asyncErrorCatcher } = require("../middleware");
-const {
-  default: { isEmail, isMongoId },
-} = require("validator");
+
 const {
   BadRequestError,
   NotFoundError,
@@ -15,18 +12,15 @@ const {
 const { StatusCodes } = require("http-status-codes");
 
 const sendMessage = asyncErrorCatcher(async (req, res) => {
-  const { content, recipient } = req.body;
+  const { subject, content, recipient } = req.body;
   if (!recipient)
     throw new BadRequestError("Please provide recipient's email or username");
 
-  const anEmail = isEmail(recipient) ? 1 : 0;
-  let receiver = anEmail
-    ? await User.findOne({ email: recipient.toLowerCase().trim() })
-    : await User.findOne({ userName: recipient.trim() });
+  let receiver = await User.findOne({ email: recipient.toLowerCase().trim() })
 
   if (!receiver)
     throw new NotFoundError(
-      `Could not find a user with ${anEmail ? "email" : "username"}: recipient`
+      "Could not find a user with email: recipient"
     );
 
   if (String(receiver._id) === req.user.userId) {
@@ -36,42 +30,24 @@ const sendMessage = asyncErrorCatcher(async (req, res) => {
   const sender = req.user.userId;
   receiver = receiver._id;
 
-  let conversation = await Conversation.findOne({
-    $or: [
-      {
-        initiator: sender,
-        partaker: receiver,
-      },
-      {
-        initiator: receiver,
-        partaker: sender,
-      }
-    ]
-  })
-
-  if (!conversation) {
-    conversation = await Conversation.create({
-      initiator: sender,
-      partaker: receiver
-    })
-  } 
-
   const message = await Message.create({
-    conversationID: conversation._id,
+    subject,
     content,
     sender,
     receiver,
   });
 
   res.status(StatusCodes.OK).json({
-    msg: "Message successfully sent",
-    sentMessage: message,
+    message
   });
 });
 
 const getMessage = asyncErrorCatcher(async (req, res) => {
   const { messageID } = req.params;
-  const message = await Message.findOne({ _id: messageID });
+  const message = await Message.findOne({ 
+    _id: messageID,
+    status: "sent" 
+  });
 
   if (!message)
     throw new NotFoundError(
@@ -84,92 +60,29 @@ const getMessage = asyncErrorCatcher(async (req, res) => {
       "You do not have permission to access this message"
     );
   
-  if (message.status === "retracted") 
-   throw new BadRequestError("The requested message has been retracted")
-
   res.status(StatusCodes.OK).json({ message });
 });
 
 const getInbox = asyncErrorCatcher(async (req, res) => {
-  const inbox = await Message.aggregate(
-    [
-      {
-        $match: {
-          $or: [
-            {
-              sender: new mongoose.Types.ObjectId(req.user.userId),
-              status: "sent",
-            },
-            {
-              receiver: new mongoose.Types.ObjectId(req.user.userId),
-              status: "sent",
-            }
-          ]
-        }
-      },
-      {
-        $sort: {
-          updatedAt: 1
-        }
-      },
-      {
-        $group: {
-          _id: "$conversationID",
-          messages: {
-            $push: "$$ROOT"
-          }
-        }
-      }
-    ]
-  )
+  const inbox = await Message.find({
+    receiver: req.user.userId,
+    status: "sent"
+  }).sort({sentAt: -1})
   
   res.status(StatusCodes.OK).json({inbox})
 
-});
-
-const getThread = asyncErrorCatcher(async (req, res) => {
-
-  const { conversationID } = req.params
-
-  if (!(isMongoId(conversationID)))
-    throw new BadRequestError(`${conversationID} is not a valid conversation ID`)
-
-  const thread = await Message.find({
-    $or:
-      [
-        {
-          conversationID,
-          status: "sent",
-          sender: req.user.userId
-        },
-        {
-          conversationID,
-          status: "sent",
-          receiver: req.user.userId
-        }
-      ]
-    }).sort({updatedAt: 1});
-
-  res.status(StatusCodes.OK).json({thread})
 });
 
 const retractMessage = asyncErrorCatcher(async (req, res) => {
   const {messageID} = req.params
   const message = await Message.findOne({
     _id: messageID,
-    sender: req.user.userId
+    sender: req.user.userId,
+    status: "sent"
   })
 
   if (!message)
-    throw new NotFoundError(`You do not have any message associated with id: ${messageID}`)
-
-  const {status} = message
-  
-  if (status == "retracted")
-    throw new BadRequestError("This message has already been retracted")
-
-  if (status == "draft")
-    throw new BadRequestError("You can only retract a sent message")
+    throw new NotFoundError(`You do not have any message associated with id: ${messageID}`)  
   
   message.status = "retracted"
   await message.save()
@@ -178,19 +91,33 @@ const retractMessage = asyncErrorCatcher(async (req, res) => {
 });
 
 const saveAsDraft = asyncErrorCatcher(async (req, res) => {
-  const { content } = req.body
+  const { subject, content } = req.body
   const message = await Message.create({
-    content, sender: req.user.userId, status: "draft"
+    subject, content, sender: req.user.userId, status: "draft"
   })
 
   res.status(StatusCodes.OK).json({message})
+})
+
+const getMessages = asyncErrorCatcher(async (req, res) => {
+  let status = req.query.status
+  if (status) {
+    status = status.trim().toLowerCase()
+  }
+
+  const messages = await Message.find({
+    sender: req.user.userId,
+    status: status
+  })
+
+  res.status(StatusCodes.OK).json({messages})
 })
 
 module.exports = {
   sendMessage,
   getMessage,
   getInbox,
-  getThread,
+  getMessages,
   retractMessage,
   saveAsDraft,
 };
