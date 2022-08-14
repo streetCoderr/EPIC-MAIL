@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const {
-  default: { isAlpha, isStrongPassword, isEmail, isAlphanumeric },
+  default: { isAlpha, isStrongPassword, isEmail },
 } = require("validator");
 
 const UserSchema = new mongoose.Schema({
@@ -23,20 +23,6 @@ const UserSchema = new mongoose.Schema({
     validate: {
       validator: isAlpha,
       message: (props) => `${props.value} is not a valid name`,
-    },
-  },
-  userName: {
-    type: String,
-    trim: true,
-    maxlength: 50,
-    minlength: 2,
-    required: [true, "please provide a username"],
-    validate: {
-      validator: function (str) {
-        return isAlphanumeric(str, "en-US", { ignore: "_" });
-      },
-      message: (props) =>
-        `${props.value} is not a valid username. Only alphabets, numbers and underscores are permissible`,
     },
   },
   email: {

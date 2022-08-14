@@ -18,12 +18,11 @@ const {
 } = require("../utils");
 
 const register = asyncErrorCatcher(async (req, res) => {
-  const { firstName, lastName, userName, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
   const user = await User.create({
     firstName,
     lastName,
-    userName,
     email,
     password,
   });
@@ -100,6 +99,7 @@ const login = asyncErrorCatcher(async (req, res) => {
 })
 
 const logout = asyncErrorCatcher(async (req, res) => {
+  
   res.cookie("accessToken", "", {
     maxAge: 0,
     signed: true,
