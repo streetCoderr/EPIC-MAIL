@@ -1,646 +1,685 @@
 openapi: 3.0.0
-
 info:
-
   title: EPIC-MAIL
-
-  description: An API for a web application that helps people exchange messages and information over the internet
-
+  description: An API that enables sending and receiving information over the internet
   contact: {}
-
   version: '1.0'
-
 servers:
-
 - url: https://epic-mailing.herokuapp.com/api/v1
-
   variables: {}
-
 paths:
-
   /auth/register:
-
     post:
-
       tags:
-
       - Auth
-
       summary: Register User
-
-      description: Registers a user by getting the relevant fields from the request's body. A link is afterwards, forwarded to the user's email address for verification
-
+      description: Registers a new user
       operationId: RegisterUser
-
       parameters: []
-
       requestBody:
-
         description: ''
-
         content:
-
           application/json:
-
             schema:
-
               $ref: '#/components/schemas/RegisterUserRequest'
-
             example:
-
-              firstName: ha
-
-              lastName: Masi
-
-              userName: ham
-
-              email: ha@gmail.com
-
+              firstName: Peter
+              lastName: Obi
+              userName: deady
+              email: godofdeadline@gmail.com
               password: 123456@Me
-
         required: true
-
       responses:
-
         '200':
-
           description: ''
-
           headers: {}
-
         '400':
-
-          description: Bad Request
-
+          description: Bad Client request
           content:
-
             application/json:
-
               schema: {}
-
         '401':
-
-          description: Authentication failed
-
+          description: User not authenticated
           content:
-
             application/json:
-
               schema: {}
-
         '403':
-
-          description: Forbidden to access route
-
+          description: Not authorized to access this route
           content:
-
             application/json:
-
               schema: {}
-
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
       deprecated: false
-
       security: []
-
   /auth/login:
-
     post:
-
       tags:
-
       - Auth
-
       summary: Login User
-
-      description: Logs in user using his/her email and password
-
+      description: Authenticates a registered user
       operationId: LoginUser
-
       parameters: []
-
       requestBody:
-
         description: ''
-
         content:
-
           application/json:
-
             schema:
-
               $ref: '#/components/schemas/LoginUserRequest'
-
             example:
-
-              email: ha@gmail.com
-
+              email: streetcoder99@gmail.com
               password: Me@123456
-
         required: true
-
       responses:
-
         '200':
-
           description: ''
-
           headers: {}
-
         '400':
-
-          description: Bad Request
-
+          description: Bad Client request
           content:
-
             application/json:
-
               schema: {}
-
         '401':
-
-          description: Authentication failed
-
+          description: User not authenticated
           content:
-
             application/json:
-
               schema: {}
-
         '403':
-
-          description: Forbidden to access route
-
+          description: Not authorized to access this route
           content:
-
             application/json:
-
               schema: {}
-
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
       deprecated: false
-
       security: []
-
   /auth/verify-email:
-
     post:
-
       tags:
-
       - Auth
-
       summary: Verify User's Email
-
-      description: The frontend provides the token and email(which itself gets from the link to verify sent to the user) to the body. This is then used to verify the user.
-
+      description: Verify user's email using tokens
       operationId: VerifyUser'sEmail
-
       parameters: []
-
       requestBody:
-
         description: ''
-
         content:
-
           application/json:
-
             schema:
-
               $ref: '#/components/schemas/VerifyUsersEmailRequest'
-
             example:
-
-              token: 7967de53e228d03b5aa81eb78db9f0348aca73c9cf13e4a7cc597115b3c7a99823e3b98f60c2a75ee75b720e06b069c5e61b
-
-              email: ha@gmail.com
-
+              token: 052e3fdd443fec7b18efa72c0f7f3cbf8635077b3ca6efb6ef86402fbea0075beeeaebd474d613c0f391052d4b7766d7cf40
+              email: godofdeadline@gmail.com
         required: true
-
       responses:
-
         '200':
-
           description: ''
-
           headers: {}
-
         '400':
-
-          description: Bad Request
-
+          description: Bad Client request
           content:
-
             application/json:
-
               schema: {}
-
         '401':
-
-          description: Authentication failed
-
+          description: User not authenticated
           content:
-
             application/json:
-
               schema: {}
-
         '403':
-
-          description: Forbidden to access route
-
+          description: Not authorized to access this route
           content:
-
             application/json:
-
               schema: {}
-
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
       deprecated: false
-
       security: []
-
   /auth/logout:
-
     get:
-
       tags:
-
       - Auth
-
       summary: Logout User
-
-      description: Removes cookies so that user's identity is forgotten by the web app until logged in again
-
+      description: Logs registered user out of the system
       operationId: LogoutUser
-
       parameters: []
-
       responses:
-
         '200':
-
           description: ''
-
           headers: {}
-
         '400':
-
-          description: Bad Request
-
+          description: Bad Client request
           content:
-
             application/json:
-
               schema: {}
-
         '401':
-
-          description: Authentication failed
-
+          description: User not authenticated
           content:
-
             application/json:
-
               schema: {}
-
         '403':
-
-          description: Forbidden to access route
-
+          description: Not authorized to access this route
           content:
-
             application/json:
-
               schema: {}
-
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
       deprecated: false
-
       security: []
-
   /auth/forget-password:
-
     post:
-
       tags:
-
       - Auth
-
       summary: Forget Password
-
-      description: Forwards a link containing a token and email address as queries to the provided email address. The user can then follow this link to reset password
-
+      description: Sends link for resetting forgotten password
       operationId: ForgetPassword
-
       parameters: []
-
       requestBody:
-
         description: ''
-
         content:
-
           application/json:
-
             schema:
-
               $ref: '#/components/schemas/ForgetPasswordRequest'
-
             example:
-
               email: ha@gmail.com
-
         required: true
-
       responses:
-
         '200':
-
           description: ''
-
           headers: {}
-
         '400':
-
-          description: Bad Request
-
+          description: Bad Client request
           content:
-
             application/json:
-
               schema: {}
-
         '401':
-
-          description: Authentication failed
-
+          description: User not authenticated
           content:
-
             application/json:
-
               schema: {}
-
         '403':
-
-          description: Forbidden to access route
-
+          description: Not authorized to access this route
           content:
-
             application/json:
-
               schema: {}
-
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
       deprecated: false
-
-      security: []
-
   /auth/reset-password:
-
     post:
-
       tags:
-
       - Auth
-
       summary: Reset Password
-
-      description: A token, email address and password is provided with which, after validity check, the user's password updated
-
+      description: Reset user's password
       operationId: ResetPassword
-
       parameters: []
-
       requestBody:
-
         description: ''
-
         content:
-
           application/json:
-
             schema:
-
               $ref: '#/components/schemas/ResetPasswordRequest'
-
             example:
-
               token: 990d3f03e3519932a323b47775c04d7ed10149428205a3d8f9b387c38196df602050c92d6d619e947ce642a361716931ba96
-
               email: ha@gmail.com
-
               password: Me@123456
-
         required: true
-
       responses:
-
         '200':
-
           description: ''
-
           headers: {}
-
         '400':
-
-          description: Bad Request
-
+          description: Bad Client request
           content:
-
             application/json:
-
               schema: {}
-
         '401':
-
-          description: Authentication failed
-
+          description: User not authenticated
           content:
-
             application/json:
-
               schema: {}
-
         '403':
-
-          description: Forbidden to access route
-
+          description: Not authorized to access this route
           content:
-
             application/json:
-
               schema: {}
-
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
       deprecated: false
-
       security: []
+  /messages:
+    post:
+      tags:
+      - Message
+      summary: Send Message
+      description: Sends message to another user
+      operationId: SendMessage
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+            example:
+              subject: ALGORITHM CLASS
+              content: >-
+                Hi, streetcoder.
 
+                Please be informed that our algorithm class will resume today. Thanks
+              recipient: streetcoder99@gmail.com
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: Bad Client request
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Not authorized to access this route
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
+      deprecated: false
+    get:
+      tags:
+      - Message
+      summary: Get messages
+      description: Get all messages of a specific status(sent, draft, retracted)
+      operationId: Getmessages
+      parameters:
+      - name: status
+        in: query
+        description: 'The status of the messages a user wishes to fetch'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: sent
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: Bad Client request
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Not authorized to access this route
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
+      deprecated: false
+  /messages/{messageID}:
+    get:
+      tags:
+      - Message
+      summary: Get A Message
+      description: Get detailed information on a single message by id
+      operationId: GetAMessage
+      parameters:
+        - in: path
+          name: messageID
+          required: true
+          schema:
+            type: string
+          description: The message ID
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: Bad Client request
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Not authorized to access this route
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
+      deprecated: false
+  /messages/inbox:
+    get:
+      tags:
+      - Message
+      summary: Get Inbox
+      description: Fetch all user's received messages
+      operationId: GetInbox
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: Bad Client request
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Not authorized to access this route
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
+      deprecated: false
+  /messages/retract/{messageID}:
+    patch:
+      parameters:
+        - in: path
+          name: messageID
+          required: true
+          schema:
+            type: string
+          description: The message ID
+      tags:
+      - Message
+      summary: Retract Message
+      description: Retract a sent message by id
+      operationId: RetractMessage
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: Bad Client request
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Not authorized to access this route
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
+      deprecated: false
+  /messages/draft:
+    post:
+      tags:
+      - Message
+      summary: Save Message as Draft
+      description: Save a message as draft
+      operationId: SaveMessageasDraft
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveMessageasDraftRequest'
+            example:
+              content: Just keeping this here. Will come back for it later.
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+        '400':
+          description: Bad Client request
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: User not authenticated
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Not authorized to access this route
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Resource not found
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: {}
+      deprecated: false
 components:
-
   schemas:
-
     RegisterUserRequest:
-
       title: RegisterUserRequest
-
       required:
-
       - firstName
-
       - lastName
-
       - userName
-
       - email
-
       - password
-
       type: object
-
       properties:
-
         firstName:
-
           type: string
-
         lastName:
-
           type: string
-
         userName:
-
           type: string
-
         email:
-
           type: string
-
         password:
-
           type: string
-
       example:
-
-        firstName: ha
-
-        lastName: Masi
-
-        userName: ham
-
-        email: ha@gmail.com
-
+        firstName: Peter
+        lastName: Obi
+        userName: deady
+        email: godofdeadline@gmail.com
         password: 123456@Me
-
     LoginUserRequest:
-
       title: LoginUserRequest
-
       required:
-
       - email
-
       - password
-
       type: object
-
       properties:
-
         email:
-
           type: string
-
         password:
-
           type: string
-
       example:
-
-        email: ha@gmail.com
-
+        email: streetcoder99@gmail.com
         password: Me@123456
-
     VerifyUsersEmailRequest:
-
       title: VerifyUsersEmailRequest
-
       required:
-
       - token
-
       - email
-
       type: object
-
       properties:
-
         token:
-
           type: string
-
         email:
-
           type: string
-
       example:
-
-        token: 7967de53e228d03b5aa81eb78db9f0348aca73c9cf13e4a7cc597115b3c7a99823e3b98f60c2a75ee75b720e06b069c5e61b
-
-        email: ha@gmail.com
-
+        token: 052e3fdd443fec7b18efa72c0f7f3cbf8635077b3ca6efb6ef86402fbea0075beeeaebd474d613c0f391052d4b7766d7cf40
+        email: godofdeadline@gmail.com
     ForgetPasswordRequest:
-
       title: ForgetPasswordRequest
-
       required:
-
       - email
-
       type: object
-
       properties:
-
         email:
-
           type: string
-
       example:
-
         email: ha@gmail.com
-
     ResetPasswordRequest:
-
       title: ResetPasswordRequest
-
       required:
-
       - token
-
       - email
-
       - password
-
       type: object
-
       properties:
-
         token:
-
           type: string
-
         email:
-
           type: string
-
         password:
-
           type: string
-
       example:
-
         token: 990d3f03e3519932a323b47775c04d7ed10149428205a3d8f9b387c38196df602050c92d6d619e947ce642a361716931ba96
-
         email: ha@gmail.com
-
         password: Me@123456
+    SendMessageRequest:
+      title: SendMessageRequest
+      required:
+      - subject
+      - content
+      - recipient
+      type: object
+      properties:
+        subject:
+          type: string
+        content:
+          type: string
+        recipient:
+          type: string
+      example:
+        subject: ALGORITHM CLASS
+        content: >-
+          Hi, streetcoder.
 
+          Please be informed that our algorithm class will resume today. Thanks
+        recipient: streetcoder99@gmail.com
+    SaveMessageasDraftRequest:
+      title: SaveMessageasDraftRequest
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: string
+      example:
+        content: Just keeping this here. Will come back for it later.
 tags:
-
 - name: Auth
-
+- name: Message
