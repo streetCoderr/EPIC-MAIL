@@ -25,8 +25,7 @@ paths:
             example:
               firstName: Peter
               lastName: Obi
-              userName: deady
-              email: godofdeadline@gmail.com
+              email: yourmail@gmail.com
               password: 123456@Me
         required: true
       responses:
@@ -75,7 +74,7 @@ paths:
             schema:
               $ref: '#/components/schemas/LoginUserRequest'
             example:
-              email: streetcoder99@gmail.com
+              email: yourmail@gmail.com
               password: Me@123456
         required: true
       responses:
