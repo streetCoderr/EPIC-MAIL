@@ -99,7 +99,12 @@ const login = asyncErrorCatcher(async (req, res) => {
 })
 
 const logout = asyncErrorCatcher(async (req, res) => {
-  
+
+  const userId = req.user.userId
+  if (userId) {
+    await Token.findOneAndDelete({user: userId})
+  }
+
   res.cookie("accessToken", "", {
     maxAge: 0,
     signed: true,
