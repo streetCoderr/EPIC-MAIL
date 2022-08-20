@@ -18,7 +18,7 @@ import cors from "cors";
 import mongoSanitize from "express-mongo-sanitize";
 
 // custom middleware
-import {errorHandler, authenticateUser} from "./middleware";
+import { errorHandler, authenticateUser } from "./middleware";
 
 // documentation
 import swaggerUI from "swagger-ui-express";
@@ -26,7 +26,7 @@ import yaml from "yamljs";
 
 const app = express();
 
-const docs = yaml.load(path.join(__dirname, '..', 'swagger.yaml'));
+const docs = yaml.load(path.join(__dirname, "..", "swagger.yaml"));
 const PORT = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
@@ -44,7 +44,7 @@ app.use(mongoSanitize());
 app.use(express.json());
 app.use(cookieParser(String(jwtSecret)));
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 

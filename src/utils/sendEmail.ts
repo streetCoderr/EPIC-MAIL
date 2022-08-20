@@ -14,7 +14,7 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: googleRefreshToken });
 
-export default async function sendMail ({
+export default async function sendMail({
   to,
   subject,
   html,
@@ -33,7 +33,7 @@ export default async function sendMail ({
         clientId: googleClientId,
         clientSecret: googleClientSecret,
         refreshToken: googleRefreshToken,
-        accessToken: accessToken.token ?? ''
+        accessToken: accessToken.token ?? "",
       },
     });
 
@@ -46,4 +46,4 @@ export default async function sendMail ({
   } catch (error) {
     console.log(error);
   }
-};
+}

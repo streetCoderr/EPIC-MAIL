@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
-import { jwtSecret } from '../config';
+import { jwtSecret } from "../config";
 
-export const generateToken = (payload: any) =>
-  jwt.sign(payload, jwtSecret);
+export const generateToken = (payload: any) => jwt.sign(payload, jwtSecret);
 
-export const generatePayload: any = (token: string) => jwt.verify(token, jwtSecret);
+export const generatePayload: any = (token: string) =>
+  jwt.verify(token, jwtSecret);
 
 export const addCookiesToResponse = ({ res, user, refreshToken }: any) => {
   const accessTokenJWT = generateToken(user);
@@ -26,5 +26,3 @@ export const addCookiesToResponse = ({ res, user, refreshToken }: any) => {
     secure: process.env.NODE_ENV === "production",
   });
 };
-
-

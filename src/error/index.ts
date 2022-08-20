@@ -10,4 +10,4 @@ export {
   UnauthenticatedError,
   UnauthorizedError,
   CustomError,
-}
+};

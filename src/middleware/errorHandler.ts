@@ -1,6 +1,11 @@
 import { StatusCodes } from "http-status-codes";
-import { Request, Response, NextFunction } from 'express'
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+import { Request, Response, NextFunction } from "express";
+const errorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const errorToHandle = {
     message: err.message || "Something went wrong. Please try again later",
     statusCode: err.statusCode || 500,

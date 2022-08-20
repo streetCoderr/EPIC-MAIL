@@ -6,13 +6,13 @@ import {
   getInbox,
   getMessages,
   retractMessage,
-  saveAsDraft
+  saveAsDraft,
 } from "../controller/messageController";
 
-router.route('/').post(sendMessage).get(getMessages)
-router.get('/inbox', getInbox)
-router.patch('/retract/:messageID', retractMessage)
-router.post('/draft', saveAsDraft)
-router.get('/:messageID', getMessage)
+router.route("/").post(sendMessage).get(getMessages);
+router.get("/inbox", getInbox);
+router.patch("/retract/:messageID", retractMessage);
+router.post("/draft", saveAsDraft);
+router.get("/:messageID", getMessage);
 
-export default router
+export default router;

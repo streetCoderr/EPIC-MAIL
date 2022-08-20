@@ -1,5 +1,5 @@
-import { Types } from 'mongoose';
-import { Request } from 'express';
+import { Types } from "mongoose";
+import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
 export interface ITokenUser {

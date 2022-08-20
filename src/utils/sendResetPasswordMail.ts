@@ -1,6 +1,5 @@
 import sendMail from "./sendEmail";
 
-
 interface IMailDetails {
   email: string;
   origin: string;
@@ -8,7 +7,12 @@ interface IMailDetails {
   name: string;
 }
 
-const sendResetPasswordMail = ({ email, origin, passwordToken, name }: IMailDetails) => {
+const sendResetPasswordMail = ({
+  email,
+  origin,
+  passwordToken,
+  name,
+}: IMailDetails) => {
   // This route is a temporary one. It should be determined by the frontend
   const route = "/api/v1/auth/reset-password";
   const verifyLink = `${origin + route}?token=${passwordToken}&email=${email}`;

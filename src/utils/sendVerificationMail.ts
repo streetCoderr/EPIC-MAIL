@@ -7,7 +7,12 @@ interface IMailDetails {
   name: string;
 }
 
-const sendVerificationMail = ({email, origin, verificationToken, name}: IMailDetails) => {
+const sendVerificationMail = ({
+  email,
+  origin,
+  verificationToken,
+  name,
+}: IMailDetails) => {
   // This route is a temporary one. It should be determined by the frontend
   const route = "/api/v1/auth/verify-email";
   const verifyLink = `${
@@ -24,4 +29,4 @@ const sendVerificationMail = ({email, origin, verificationToken, name}: IMailDet
   });
 };
 
-export default sendVerificationMail
+export default sendVerificationMail;
