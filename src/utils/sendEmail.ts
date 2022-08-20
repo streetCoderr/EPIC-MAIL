@@ -12,6 +12,7 @@ const oAuth2Client = new google.auth.OAuth2(
   googleClientSecret,
   redirectURL
 );
+// eslint-disable-next-line camelcase
 oAuth2Client.setCredentials({ refresh_token: googleRefreshToken });
 
 export default async function sendMail({

@@ -15,7 +15,7 @@ export const sendMessage = asyncErrorCatcher(
     if (!recipient)
       throw new BadRequestError("Please provide recipient's email or username");
 
-    let receiver = await User.findOne({
+    const receiver = await User.findOne({
       email: recipient.toLowerCase().trim(),
     });
 
